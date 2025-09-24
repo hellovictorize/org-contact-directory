@@ -6,10 +6,60 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+// Industry model
+model Industry {
+  id            Int             @id @default(autoincrement())
+  name          String          @unique
+  description   String?
+  isActive      Boolean         @default(true)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  organizations Organization[]
+}
+
+// Organization model
+model Organization {
+  id        Int        @id @default(autoincrement())
+  name      String
+  description String?
+  website   String?
+  logoUrl   String?
+  foundedDate DateTime?
+  taxId     String?
+  isActive  Boolean     @default(true)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  industryId Int?
+  industry   Industry?  @relation(fields: [industryId], references: [id])
+
+  contacts  Contact[]
+}
+
+// Contact model
+model Contact {
+  id        Int        @id @default(autoincrement())
+  firstName String
+  lastName  String
+  jobTitle  String?
+  department String?
+  isPrimaryContact Boolean @default(false)
+  notes     String?
+  email     String?
+  officePhoneNumber String?
+  mobilePhoneNumber String?
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  organizationId Int
+  organization   Organization @relation(fields: [organizationId], references: [id])
 }
